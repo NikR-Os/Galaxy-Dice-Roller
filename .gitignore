@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+.pnpm-lock.yaml
 
 # testing
 /coverage
@@ -33,4 +34,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+tsconfig.json
 next-env.d.ts
