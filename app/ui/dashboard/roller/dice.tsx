@@ -1,16 +1,47 @@
 'use client'
-import { useBox, PublicApi } from "@react-three/cannon";
 import * as THREE from "three";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { RigidBody } from "@react-three/rapier";
+import type { RapierRigidBody } from "@react-three/rapier";
 import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 
 
-type DiceProps = {
-    position?: [number, number, number];
-    apiRef?: React.RefObject<PublicApi>;
-};
+export default function Dice({ rollCount}) {
 
-export default function Dice({ position = [0, 2, 0], apiRef }: DiceProps) {
+    const [diceCount, setDiceCount] = useState(3);
+
+    const diceRefs = useRef<(RapierRigidBody[])>([]);
+
+    const diceArray = Array.from({ length: diceCount }, (_, dIdx) => ({
+        id: dIdx,
+        position: [6, dIdx * 1.5, 0] as [number, number, number]
+    }));
+
+        
+
+    useEffect(() => {
+        rollDice();
+    }, [rollCount])
+
+    function rollDice() {
+        console.log('yeah')
+        diceRefs.current.forEach((d, dIdx) => {
+            const q = new THREE.Quaternion();
+            q.setFromEuler(new THREE.Euler(
+                Math.random() * Math.PI * 2,
+                0,
+                Math.random() * Math.PI * 2
+            ));
+            d.setLinvel({ x: 0, y: 0, z: 0 }, true);
+            d.setAngvel({ x: 0, y: 0, z: 0 }, true)
+            d.setRotation({ x: q.x, y: q.y, z: q.z, w: q.w }, true);
+            d.setTranslation({ x: 6, y: dIdx * 1.5, z: 0 }, true);
+            const force = 3 + 25 * Math.random();
+            d.applyImpulse({ x: -force, y: force, z: 0 }, true);
+            d.applyTorqueImpulse({x: 0, y:0, z: 0.2}, true);
+        })
+    }
 
     const { scene } = useGLTF('/models/dice.glb');
     const boxMaterialOuter = new THREE.MeshStandardMaterial({ color: 0xeeeeee });
@@ -24,22 +55,21 @@ export default function Dice({ position = [0, 2, 0], apiRef }: DiceProps) {
         }
     });
 
-    const [ref, api] = useBox(() => ({
-        mass: 1,
-        args: [1, 1, 1],
-        position: position, // Fix Later Pls Remember - Works For Now.
-        sleepTimeLimit: 0.1,
-    }));
-
-    useEffect(() => {
-        if (apiRef) {
-            apiRef.current = api;
-        }
-    }, [api, apiRef]);
- 
     return (
-        <group ref={ref}>
-            <primitive object={scene} />
+        <group>
+            
+            {diceArray.map(dice => (
+                
+                <RigidBody 
+                    mass={5}
+                    key={dice.id}
+                    ref={el => { diceRefs.current[dice.id] = el }}
+                    colliders="cuboid"
+                    restitution={0.35}>
+                    <primitive object={scene.clone()}/>
+                </RigidBody>
+            ))}
+
         </group>
     );
 }

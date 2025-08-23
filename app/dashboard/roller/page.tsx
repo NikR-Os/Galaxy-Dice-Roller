@@ -6,32 +6,17 @@ import { useRef, useState } from "react";
 
 export default function Page() {
 
-    // function throwDice() {
-    //     setShowDice(true);
+    const [showDice, setShowDice] = useState(false);
 
-    //     diceRefs.forEach((ref, idx) => {
-    //         const api = ref.current;
-    //         if (!api) return;
-
-    //         api.velocity.set(0, 0, 0);
-    //         api.angularVelocity.set(0, 0, 0);
-
-    //         api.position.set(6, idx * 1.5, 0);
-
-    //         api.rotation.set(
-    //             Math.random() * Math.PI * 2,
-    //             Math.random() * Math.PI * 2,
-    //             Math.random() * Math.PI * 2
-    //         );
-
-    //         const force = 3 + 5 * Math.random();
-    //         api.applyImpulse([-force, force, 0], [0, 0, 0.2]);
-    //     });
-    // }
+    const [rollCount, setRollCount] = useState(0);
+    
     return (
-        <div style={{width: '100vw', height: '100vh'}}>
-
-            <DiceRollerScene />
+        <div style={{ width: '100vw', height: '100vh' }}>
+            <button onClick={() => {
+                setShowDice(true)
+                setRollCount(prev => prev + 1);
+            }}>Roll Dice</button>
+            <DiceRollerScene showDice={showDice} rollCount={rollCount} />
         </div>
     );
 }
