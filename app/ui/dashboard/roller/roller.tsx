@@ -9,7 +9,7 @@ import type { RapierRigidBody } from "@react-three/rapier";
 import * as THREE from "three";
 
 
-export default function DiceRollerScene({ showDice, rollCount }) {
+export default function DiceRollerScene({ rollCount }) {
 
 
 
@@ -22,7 +22,7 @@ export default function DiceRollerScene({ showDice, rollCount }) {
                 shadow-camera-far={400} />
             <Physics paused={false} gravity={[0, -50, 0]} debug>
                 <Floor />
-                {showDice && <Dice rollCount={rollCount}  />}
+                {<Dice rollCount={rollCount}  />}
             </Physics>
         </Canvas>
     );
